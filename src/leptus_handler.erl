@@ -313,7 +313,7 @@ handler_cross_domains(Handler, Route, Req, HandlerState) ->
                     F = cross_domains,
                     try Handler:F(Route, Req, HandlerState) of
                         {HostMatches, HandlerState1} ->
-                            Host = leptus_utils:get_uri_authority(Origin),
+                            Host = leptus_utils:get_uri_authority(<<"*">>),
                             case origin_matches(Host, HostMatches) of
                                 false ->
                                     {[], HandlerState1};
@@ -413,6 +413,8 @@ prepare_headers_body(Headers, {msgpack, Body}) ->
     {maybe_set_content_type(msgpack, Headers), msgpack:pack({Body}, [jiffy])};
 prepare_headers_body(Headers, {html, Body}) ->
     {maybe_set_content_type(html, Headers), Body};
+prepare_headers_body(Headers, {xml, Body}) ->
+    {maybe_set_content_type(xml, Headers), Body};
 prepare_headers_body(Headers, Body) ->
     {maybe_set_content_type(text, Headers), Body}.
 
@@ -431,6 +433,7 @@ maybe_set_content_type(Type, Headers) ->
 content_type(text) -> <<"text/plain">>;
 content_type(html) -> <<"text/html">>;
 content_type(json) -> <<"application/json">>;
+content_type(xml) -> <<"application/xml">>;
 content_type(msgpack) -> <<"application/x-msgpack">>.
 
 %% -----------------------------------------------------------------------------
